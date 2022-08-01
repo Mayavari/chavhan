@@ -1,0 +1,358 @@
+#include<fstream>
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+class sell
+{
+private:
+	int productcode=0;
+	float price=0;
+	float dis=0;
+	string productname;
+
+public:
+	void menu();
+	void Admin();
+	void user();
+	void Add();
+	void Remove();
+	void Modify();
+	void list();
+	void receipt();
+};
+void sell::menu()
+{
+m:
+	int c;
+	string username;
+	int password;
+	cout << "\n\t\t\t ***********************\n";
+	cout << "\n\t\t\t WELCOME TO MY SHOP.. \n";
+	cout << "\n\t\t\t *****************************\n";
+	cout << "\n\t\t\t 1.Admin \n";
+	cout << "\n\t\t\t 2.user \n";
+	cout << "\n\t\t\t 3.Exit \n";
+	cin >> c;
+	switch (c)
+	{
+	case 1:
+		cout << "\n\t\t\t Please login \n";
+		cout << "\n\t\t\t Enter username \n";
+		cin >> username;
+		cout << "\n\t\t\t Enter password \n";
+		cin >> password;
+		if (username == "maya" && password == 123)
+		{
+			Admin();
+		}
+		else
+		{
+			cout << "\n\t\t\t Please check username and password \n";
+		}
+		break;
+
+	case 2:
+	{
+		user();
+	}
+	case 3:
+	{
+		exit(0);
+	}
+	default:
+	{
+		cout << "\n\t\t\t Please choose from the above option. \n";
+	}
+	}
+	goto m;
+}
+void sell::Admin()
+{
+m:
+	int choice;
+	cout << "\n\t\t\t Admin menu \n";
+	cout << "\n\t\t\t *******************************\n";
+	cout << "\n\t\t\t 1.Add the product\n ";
+	cout << "\n\t\t\t 2.Modify the product\n ";
+	cout << "\n\t\t\t 3.Delete the product\n ";
+	cout << "\n\t\t\t 4.Back to the  menu \n ";
+	cout << "\n\t\t\t Please enter your choice \n";
+	cin >> choice;
+	switch (choice)
+	{
+	case 1:
+		Add();
+		break;
+	case 2:
+		Modify();
+		break;
+	case 3:
+		Remove();
+		break;
+	case 4:
+		menu();
+	default:
+		cout << "\n\t\t\t Invalid choice \n";
+	}
+	goto m;
+}
+void sell::user()
+{
+m:
+	int c;
+	cout << "\n\t\t\t user \n";
+	cout << "\n\t\t\t ****************************** \n";
+	cout << "\n\t\t\t 1.Buy the product \n";
+	cout << "\n\t\t\t 2.Go back \n";
+
+	cout << "\n\t\t\t Please enter your choice \n";
+	cin >> c;
+	switch (c)
+	{
+	case 1:
+		receipt();
+		break;
+	case 2:
+		menu();
+
+	default:
+		cout << "\n\t\t\t Invalid Choice \n";
+	}
+	goto m;
+}
+void sell::Add()
+{
+m:
+	fstream x;
+	int c;
+	int token = 0;
+	float p;
+	float d;
+	string n;
+	cout << "\n\t\t\t Add new product  \n";
+	cout << "\n\t\t\t Product code of the product \n";
+	cin >> productcode;
+	cout << "\n\t\t\t Name of the product \n";
+	cin >> productname;
+	cout << "\n\t\t\t Price of the product \n";
+	cin >> price;
+	cout << "\n\t\t\t Dicount on the product \n";
+	cin >> dis;
+	x.open("database.txt", ios::in);
+
+	if (!x)
+	{
+		x.open("database.txt", ios::app | ios::out);
+		x << " " << productcode << " " << productname << " " << price << " " << dis << " \n";
+		x.close();
+	}
+	else
+	{
+		x >> c >> n >> p >> d;
+		while (!x.eof())
+		{
+			if (c == productcode)
+			{
+				token++;
+			}
+			x >> c >> n >> p >> d;
+		}
+		x.close();
+	}
+	if (token == 1)
+		goto m;
+	else {
+		x.open("database.txt", ios::app | ios::out);
+		x << " " << productcode << " " << productname << " " << price << " " << dis << " \n";
+		x.close();
+	}
+}
+void sell::Modify()
+{
+	fstream x, x1;
+	int productkey;
+	int token = 0;
+	int c;
+	float p;
+	float d;
+	string n;
+
+	cout << "\n\t\t\t Modify the record\n";
+	cout << "\n\t\t\t Product code :\n";
+	cin >> productkey;
+	x.open("database.txt", ios::in);
+	if (!x)
+	{
+		cout << "\n\t\t\t file does not exixt. \n";
+	}
+	else
+	{
+		x1.open("database.txt", ios::app | ios::out);
+		x >> productcode >> productname >> price >> dis;
+		while (!x.eof())
+		{
+			if (productkey == productcode)
+			{
+				cout << "\n\t\t\t Product new code : \n";
+				cin >> c;
+				cout << "\n\t\t\t Name of the product : \n";
+				cin >> n;
+				cout << "\n\t\t\t Price: \n";
+				cin >> p;
+				cout << "\n\t\t\t Discount : \n";
+				cin >> d;
+				x1 << " " << c << " " << n << " " << p << " " << d << " \n";
+				cout << "\n\t\t\t Record edited .\n";
+				token++;
+
+			}
+			else
+			{
+
+				x1 << " " << productcode << " " << productname << " " << price << " " << dis << " \n";
+
+			}
+			x >> productcode >> productname >> price >> dis;
+		}
+	}
+	x.close();
+	x1.close();
+
+	remove("database.txt");
+	rename("database1.txt","database.txt");
+
+	if (token == 0)
+	{
+		cout << "\n\t\t\t Record not found. \n";
+	}
+}
+void sell::Remove()
+{
+	fstream x, x1;
+	int productkey;
+	int token = 0;
+	cout << "\n\t\t\t Delete product \n";
+	cout << "\n\t\t\t Product code : \n";
+	cin >> productkey;
+	x.open("database.txt", ios::in);
+	if (!x)
+	{
+		cout << "\n\t\t\t File does not exist.";
+	}
+	else
+	{
+		x1.open("database.txt", ios::app | ios::out);
+		while (!x.eof())
+		{
+			if (productcode == productkey)
+			{
+				cout << "\n\t\t\t Product deleted successfully .";
+				token++;
+			}
+			else
+			{
+				x1 << " " << productcode << " " << productname << " " << price << " " << dis << " \n";
+			}
+			x >> productcode >> productname >> price >> dis;
+		}
+		x.close();
+		x1.close();
+		remove("database.txt"); 
+		rename("database1.txt","database.txt");
+		if (token == 0)
+		{
+			cout << "\n\t\t\t Records not found.\n ";
+		}
+	}
+}
+void sell::list()
+{
+	fstream x;
+	x.open("database.text", ios::in);
+	cout << "\n\t\t\t ****************************************** \n";
+	cout << "\n\t\t\t ProNo\t\t Name \t\t Price \n";
+	cout << "\n\t\t\t ******************************************* \n";
+	x >> productcode >> productname >> price >> dis;
+	while (!x.eof())
+	{
+		cout << productcode << "\t\t" << productname << "\t\t" << price << "\n";
+		x >> productcode >> productname >> price >> dis;
+	}
+	x.close();
+}
+void sell::receipt()
+{
+	fstream x;
+	int arrc[200];
+	int arrq[200];
+	char choice;
+	int c = 0;
+	float amount = 0;
+	float dis = 0;
+	float total = 0;
+
+	cout << "\n\t\t\t RECEIPT .\n";
+	x.open("database.txt", ios::in);
+	if (!x)
+	{
+		cout << "\n\t\t\t Empty database. \n";
+	}
+	else
+	{
+		x.close();
+		list();
+		cout << "\n\t\t\t ########################## \n";
+		cout << " Please plaxce your order \n";
+		cout << "\n\t\t\t ########################### \n";
+		do
+		{
+			m:
+			cout << "\n\t\t\t Enter the product code : \n";
+			cin >> arrc[c];
+			cout << "\n\t\t\t Enter the product quantity : \n";
+			cin >> arrq[c];
+			for (int i = 0;i < c;i++)
+			{
+				if (arrc[c] == arrc[i])
+				{
+					cout << "\n\t\t\t Duplicate product code. Please try again. \n";
+					goto m;
+				}
+			}
+			c++;
+			cout << "\n Do you want to buy another product ? if yes then press y else no \n";
+			cin >> choice;
+		} 
+		while (choice == 'y');
+		cout << "\n\t\t\t **************RECEIPT****************** \n";
+		cout << "\n\t\t\t Product No\t Product name No\t Product quantity No\t Price\t Amount with discount \t\n ";
+			for (int i = 0;i < c;i++)
+			{
+				x.open("database.txt", ios::in);
+				x >> productcode >> productname >> price >> dis;
+				while (!x.eof())
+				{
+					if (productcode == arrc[i])
+					{
+						amount = price * arrq[i];
+						dis = amount - (amount * dis / 100);
+						total = total + dis;
+						cout << "\n" << productcode << productname << arrq[i] << price << amount << dis;
+					}
+					x >> productname >> price >> dis;
+				}
+			}
+			x.close();
+			
+				cout << "\n Total Amount : \n";
+			}
+		}
+	
+	int main()
+	{
+		sell s;
+		s.menu();
+		return 0;
+	}
